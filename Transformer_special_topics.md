@@ -233,3 +233,34 @@ $$L_{balance} = \alpha \cdot N \sum_{i=1}^{N} f_i \cdot P_i$$
   Every residual connection has to pass through a layer normalization.
 
   Expected gradients at the start are expected to be large, which is why a warm up is required for the learning rate. The LN is started near zero and then slowly increased with number of iterations.
+
+- SFT (Supervised Fine-Tuning)
+  
+  - Place in lifecycle:
+    - Pre-training: Read the internet (Learn language and facts).
+
+    - **Supervised Fine-Tuning (SFT)**: Read human-written Q&A pairs (Learn how to be an assistant).
+
+    - Alignment (RLHF / DPO): Learn from human feedback (Learn what makes a great answer versus an okay answer, and learn to reject unsafe prompts).
+  
+  - LoRA (Low Rank Adaptation)
+    - Keep the base model frozen and train two smaller matrices.
+
+    - There are usually added alongside Q and K matrices.
+
+      For example, $A$ and $B$, based on a small "Rank" ($r$), like $r=8$:
+      
+      Matrix $A$: $4096 \times 8$
+      
+      Matrix $B$: $8 \times 4096$
+
+    - Consider input $x$. On entering the transformer, it is multiplied by $Q$ to generate the query vector.
+
+    - At the same time, $x$ is multiplied by $A$ first and then $B$. Because it first ranks down and then ranks up to the original dimension, the output shape is same as the input.
+
+    - This multiplication result is then added back to the Query vector.
+
+      $Q_x$ = $x.Q$ + $(x.A)B$
+    
+    
+
