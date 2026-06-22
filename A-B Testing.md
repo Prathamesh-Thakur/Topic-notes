@@ -101,3 +101,48 @@ Hurdle (Z) | 1.96 (Harder) | 1.645 (Easier) |
 Blind Spot | None. Detects wins and losses. | Blind to the opposite direction. |
 Use Case | 99% of A/B Tests. | Specific "Do No Harm" tests. |
 
+## Sequential testing
+![alt text](image.png)
+
+- This is used when you still want to peek at the results.
+- Early on in the test, a high Z-score is necesarry to either accept or reject the null hypothesis.
+- As the sample size goes on increasing,, the test boundaries are relaxed.
+
+## Bayesian testing
+- Uptil now, all methods discussed were **frequentist**, meaning they dealth with hypotheses.
+- Bayesian testing strategy deals in probabilities.
+- Not only can they tell if a variant is a winner or not, they can also tell how much risk is there in case it turns out to be a loser.
+
+Process:
+- We initially assume nothing is known about either variant. We call this a **prior**. At the start, it is a simple flat line [$\beta(1,1)$].
+- Once we start getting new data, we update our current distribution by adding it to the prior, and updating our belief.
+- Then we plot both the curves, where the overlap will tell what are the chances of failure.
+- Then we run a Monte Carlo simulation. Each round, a random value from both distributions is picked. Depending on the magnitude, the control or variant group wins.
+- After all the rounds, we see how many times the variant beat the control group.
+- We can also check the simulations where the variant lost to estimate the **expected loss**.
+
+**Choosing the distribution remains the same as frequentist.**
+
+### Prior distributions & Conjugate pairs
+| If your Data is... | Use this Prior... | Because...
+| --- | --- | --- |
+Binomial (Conversions) | Beta Distribution | Adding data is just "Plus (+)" arithmetic. |
+Poisson (Counts) | Gamma Distribution | It models the rate of events perfectly. | 
+Normal (Averages) | Normal Distribution | It models the mean perfectly. |
+
+### Chossing a prior
+Do you have historical data?
+- No: Use Weak Prior (1,1).
+- Yes: Use Strong Prior (add historical success/failures to your starting count).
+
+## Multi Armed Bandits
+Instead of waiting for an A/B test to finish, a Multi-Armed Bandit dynamically shifts traffic to the winning variant in real-time. It is named after a gambler trying to find the highest-paying slot machine (a "one-armed bandit") in a casino.
+
+### Thompson Sampling
+It relies entirely on the Bayesian conjugate priors (Beta distributions) established in the previous section.
+
+- Start with a weak prior for all variants, modeled as $\text{Beta}(1, 1)$.
+- For every single new visitor, the algorithm runs a rapid Monte Carlo draw, pulling one random number from each variant's current Beta distribution.
+- The visitor is immediately routed to the variant that produced the highest random number.The visitor either converts or bounces.
+- The engine instantly updates the $\alpha$ (success) or $\beta$ (failure) count for that specific variant.
+- The Result: As a variant proves it is a winner, its distribution shifts higher and becomes narrower. It naturally wins the random draw more often, effectively starving the losing variants of traffic.
