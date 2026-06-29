@@ -229,7 +229,7 @@ $$L_{balance} = \alpha \cdot N \sum_{i=1}^{N} f_i \cdot P_i$$
   At initialization, this architecture keeps the variance of the gradients stable across all layers.
 
 - PostNorm
-  $$x_{l+1} = x_l + \text{SubLayer}(\text{LayerNorm}(x_l))$$
+  $$x_{l+1} = \text{LayerNorm}(x_l + \text{SubLayer}(x_l))$$
   Every residual connection has to pass through a layer normalization.
 
   Expected gradients at the start are expected to be large, which is why a warm up is required for the learning rate. The LN is started near zero and then slowly increased with number of iterations.
